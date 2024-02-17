@@ -175,6 +175,32 @@ static void str_to_uuid(struct TEEC_UUID *uuid, const char *buf)
 		s += hex_str_to_value(s, 2, &uuid->clockSeqAndNode[i]);
 }
 
+static inline void uuid_to_str(struct TEEC_UUID *uuid, char *buf)
+{
+	int ret = 0;
+
+	ret = snprintf(buf, UUID_STRING_LENGTH,
+			"%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x",
+			uuid->timeLow, uuid->timeMid,
+			uuid->timeHiAndVersion,
+			uuid->clockSeqAndNode[0], uuid->clockSeqAndNode[1],
+			uuid->clockSeqAndNode[2], uuid->clockSeqAndNode[3],
+			uuid->clockSeqAndNode[4], uuid->clockSeqAndNode[5],
+			uuid->clockSeqAndNode[6], uuid->clockSeqAndNode[7]);
+	if (ret <= 0)
+		IMSG_ERROR("snprintf failed ret %d\n", ret);
+}
+
+static inline void print_uuid(struct TEEC_UUID *uuid)
+{
+	IMSG_DEBUG("uuid: %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
+			 uuid->timeLow, uuid->timeMid, uuid->timeHiAndVersion,
+			 uuid->clockSeqAndNode[0], uuid->clockSeqAndNode[1],
+			 uuid->clockSeqAndNode[2], uuid->clockSeqAndNode[3],
+			 uuid->clockSeqAndNode[4], uuid->clockSeqAndNode[5],
+			 uuid->clockSeqAndNode[6], uuid->clockSeqAndNode[7]);
+}
+
 static bool is_uuid_equal(const struct TEEC_UUID *uuid1,
 					const struct TEEC_UUID *uuid2)
 {
@@ -341,6 +367,9 @@ int tz_load_ta_by_str(const char *buf)
 		return -EINVAL;
 	}
 
+	str_to_uuid(&uuid, buf);
+	print_uuid(&uuid);
+
 	res = load_ut_drv(&uuid, TEEI_TA);
 	if (res)
 		IMSG_DEBUG("load secure ta failed(uuid: %s)\n",
@@ -359,7 +388,9 @@ int tz_load_drv_by_str(const char *buf)
 				buf, len);
 		return -EINVAL;
 	}
-	
+
+	str_to_uuid(&uuid, buf);
+	print_uuid(&uuid);
 
 	res = load_ut_drv(&uuid, TEEI_DRV);
 	if (res)
@@ -381,6 +412,8 @@ static ssize_t load_ut_drv_store(struct device *dev,
 		return len;
 	}
 
+	str_to_uuid(&uuid, buf);
+	print_uuid(&uuid);
 
 	ret = load_ut_drv(&uuid, TEEI_DRV);
 	if (ret)
@@ -434,6 +467,7 @@ static ssize_t unload_ut_drv_store(struct device *dev,
 		return len;
 	}
 
+	str_to_uuid(&uuid, buf);
 
 	ret = unload_ut_drv(&uuid);
 	if (ret)
@@ -445,7 +479,18 @@ static DEVICE_ATTR_WO(unload_ut_drv);
 
 static ssize_t list_ut_drv_show(struct device *cd,
 				struct device_attribute *attr, char *buf)
-		
+{
+	struct ut_drv_entry *entry;
+	char uuid_str[UUID_STRING_LENGTH] = {0};
+	char *s = buf;
+
+	list_for_each_entry(entry, &ut_drv_list, list) {
+		uuid_to_str(&entry->uuid, uuid_str);
+		s += snprintf(s, UUID_STRING_LENGTH, "%s\n", uuid_str);
+	}
+
+	return (ssize_t)(s - buf);
+}
 static DEVICE_ATTR_RO(list_ut_drv);
 
 #if IS_ENABLED(CONFIG_MICROTRUST_TEST_DRIVERS)
