@@ -178,8 +178,7 @@ static void str_to_uuid(struct TEEC_UUID *uuid, const char *buf)
 static inline void uuid_to_str(struct TEEC_UUID *uuid, char *buf)
 {
 	int ret = 0;
-
-	ret = snprintf(buf, UUID_STRING_LENGTH,
+	
 			"%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x",
 			uuid->timeLow, uuid->timeMid,
 			uuid->timeHiAndVersion,
