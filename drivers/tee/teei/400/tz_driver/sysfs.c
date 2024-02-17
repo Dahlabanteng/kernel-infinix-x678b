@@ -175,31 +175,6 @@ static void str_to_uuid(struct TEEC_UUID *uuid, const char *buf)
 		s += hex_str_to_value(s, 2, &uuid->clockSeqAndNode[i]);
 }
 
-static inline void uuid_to_str(struct TEEC_UUID *uuid, char *buf)
-{
-	int ret = 0;
-	
-			"%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x",
-			uuid->timeLow, uuid->timeMid,
-			uuid->timeHiAndVersion,
-			uuid->clockSeqAndNode[0], uuid->clockSeqAndNode[1],
-			uuid->clockSeqAndNode[2], uuid->clockSeqAndNode[3],
-			uuid->clockSeqAndNode[4], uuid->clockSeqAndNode[5],
-			uuid->clockSeqAndNode[6], uuid->clockSeqAndNode[7]);
-	if (ret <= 0)
-		IMSG_ERROR("snprintf failed ret %d\n", ret);
-}
-
-static inline void print_uuid(struct TEEC_UUID *uuid)
-{
-	IMSG_DEBUG("uuid: %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
-			 uuid->timeLow, uuid->timeMid, uuid->timeHiAndVersion,
-			 uuid->clockSeqAndNode[0], uuid->clockSeqAndNode[1],
-			 uuid->clockSeqAndNode[2], uuid->clockSeqAndNode[3],
-			 uuid->clockSeqAndNode[4], uuid->clockSeqAndNode[5],
-			 uuid->clockSeqAndNode[6], uuid->clockSeqAndNode[7]);
-}
-
 static bool is_uuid_equal(const struct TEEC_UUID *uuid1,
 					const struct TEEC_UUID *uuid2)
 {
