@@ -445,18 +445,7 @@ static DEVICE_ATTR_WO(unload_ut_drv);
 
 static ssize_t list_ut_drv_show(struct device *cd,
 				struct device_attribute *attr, char *buf)
-{
-	struct ut_drv_entry *entry;
-	char uuid_str[UUID_STRING_LENGTH] = {0};
-	char *s = buf;
-
-	list_for_each_entry(entry, &ut_drv_list, list) {
-		uuid_to_str(&entry->uuid, uuid_str);
-		s += snprintf(s, UUID_STRING_LENGTH, "%s\n", uuid_str);
-	}
-
-	return (ssize_t)(s - buf);
-}
+		
 static DEVICE_ATTR_RO(list_ut_drv);
 
 #if IS_ENABLED(CONFIG_MICROTRUST_TEST_DRIVERS)
