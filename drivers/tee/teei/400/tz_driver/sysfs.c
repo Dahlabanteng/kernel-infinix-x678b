@@ -341,9 +341,6 @@ int tz_load_ta_by_str(const char *buf)
 		return -EINVAL;
 	}
 
-	str_to_uuid(&uuid, buf);
-	print_uuid(&uuid);
-
 	res = load_ut_drv(&uuid, TEEI_TA);
 	if (res)
 		IMSG_DEBUG("load secure ta failed(uuid: %s)\n",
@@ -362,9 +359,7 @@ int tz_load_drv_by_str(const char *buf)
 				buf, len);
 		return -EINVAL;
 	}
-
-	str_to_uuid(&uuid, buf);
-	print_uuid(&uuid);
+	
 
 	res = load_ut_drv(&uuid, TEEI_DRV);
 	if (res)
@@ -386,8 +381,6 @@ static ssize_t load_ut_drv_store(struct device *dev,
 		return len;
 	}
 
-	str_to_uuid(&uuid, buf);
-	print_uuid(&uuid);
 
 	ret = load_ut_drv(&uuid, TEEI_DRV);
 	if (ret)
@@ -441,7 +434,6 @@ static ssize_t unload_ut_drv_store(struct device *dev,
 		return len;
 	}
 
-	str_to_uuid(&uuid, buf);
 
 	ret = unload_ut_drv(&uuid);
 	if (ret)
